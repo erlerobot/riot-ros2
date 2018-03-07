@@ -30,6 +30,10 @@ RUN apt-get update
 RUN apt install -y gcc-arm-embedded
 RUN apt install -y wget
 
+
+# ======================================================
+# ============    RIOT        ==========================
+# ======================================================
 #--------------------
 # Sources
 #--------------------
@@ -40,17 +44,6 @@ RUN cd /root/ros2_riot_ws && wget ${DOWNLOAD_URL}/ament2riot.cmake
 RUN cd /root/ros2_riot_ws && vcs import src < riot-ros2.repos
 # AMENT_IGNORE test_msgs package
 RUN cd /root/ros2_riot_ws && touch src/ros2/rcl_interfaces/test_msgs/AMENT_IGNORE
-
-# #--------------------
-# # Tooling and compiling (split but altogether)
-# #--------------------
-# RUN mkdir -p /root/ros2_riot_ws/tools/src
-# RUN cd /root/ros2_riot_ws/tools && wget ${DOWNLOAD_URL}/riot-ros2-tools.repos
-# RUN cd /root/ros2_riot_ws/tools && vcs import src < riot-ros2-tools.repos
-# RUN pip3 install pyparsing
-# RUN cd /root/ros2_riot_ws/tools && ./src/ament/ament_tools/scripts/ament.py build --symlink-install
-# RUN source /root/ros2_riot_ws/tools/install/setup.bash
-# RUN cd /root/ros2_riot_ws && ament build --symlink-install --force-cmake-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=`pwd`/ament2riot.cmake
 
 #--------------------
 # Tooling
@@ -82,11 +75,27 @@ RUN apt-get install -y unzip bsdmainutils libudev-dev vim gdb openocd usbutils
 RUN git config --global user.email "you@example.com"
 RUN git config --global user.name "micro-ROS"
 
-
+# ======================================================
+# ============    NUTTX        =========================
+# ======================================================
 #--------------------
-# Entry point
+# Sources
 #--------------------
-COPY entrypoint.sh /
+ENV DOWNLOAD_URL_NUTTX https://raw.githubusercontent.com/erlerobot/riot-ros2/nuttx
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["bash"]
+WORKDIR /root
+RUN mkdir -p /root/ros2_nuttx_ws/src
+RUN cd /root/ros2_nuttx_ws && wget ${DOWNLOAD_URL_NUTTX}/nuttx-ros2.repos
+RUN cd /root/ros2_nuttx_ws && wget ${DOWNLOAD_URL_NUTTX}/ament2riot.cmake
+RUN cd /root/ros2_nuttx_ws && vcs import src < nuttx-ros2.repos
+# AMENT_IGNORE test_msgs package
+RUN cd /root/ros2_nuttx_ws && touch src/ros2/rcl_interfaces/test_msgs/AMENT_IGNORE
+
+
+# #--------------------
+# # Entry point
+# #--------------------
+# COPY entrypoint.sh /
+#
+# ENTRYPOINT ["/entrypoint.sh"]
+# CMD ["bash"]
