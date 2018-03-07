@@ -77,7 +77,7 @@ COPY patches /root
 RUN patch /root/ros2_riot_ws/install/RIOT/dist/tools/tapsetup/tapsetup /root/sudo-tapsetup.patch
 RUN patch -R /root/ros2_riot_ws/install/RIOT/dist/tools/tapsetup/tapsetup /root/docker-tapsetup.patch
 
-RUN apt-get install -y unzip bsdmainutils
+RUN apt-get install -y unzip bsdmainutils libudev-dev vim gdb openocd usbutils
 # Configure exemplary git credentials to run native examples
 RUN git config --global user.email "you@example.com"
 RUN git config --global user.name "micro-ROS"
