@@ -82,6 +82,7 @@ RUN git config --global user.name "micro-ROS"
 # Sources
 #--------------------
 ENV DOWNLOAD_URL_NUTTX https://raw.githubusercontent.com/erlerobot/riot-ros2/nuttx
+RUN ls
 
 WORKDIR /root
 RUN mkdir -p /root/ros2_nuttx_ws/src
@@ -91,6 +92,12 @@ RUN cd /root/ros2_nuttx_ws && vcs import src < nuttx-ros2.repos
 # AMENT_IGNORE test_msgs package
 RUN cd /root/ros2_nuttx_ws && touch src/ros2/rcl_interfaces/test_msgs/AMENT_IGNORE
 
+#--------------------
+# (Cross-)Compiling
+#--------------------
+# cross-compile everything through ament
+# RUN cd /root/ros2_nuttx_ws && ./src/ament/ament_tools/scripts/ament.py build --symlink-install
+#--force-cmake-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=`pwd`/ament2riot.cmake
 
 # #--------------------
 # # Entry point

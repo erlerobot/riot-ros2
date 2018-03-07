@@ -1,8 +1,8 @@
 repositories:
-  riot-ros2:
+  nuttx:
     type: git
     url: https://github.com/erlerobot/riot-ros2.git
-    version: master
+    version: nuttx
   ros2/rclc:
     type: git
     url: https://github.com/astralien3000/rclc.git
