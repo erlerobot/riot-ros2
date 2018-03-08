@@ -31,13 +31,13 @@ This prototype, aims to put together something like:
 +-------------------------------------------------------------+----------------+
 |                       application                           |   application  |
 +-------------------------------------------------------------+----------------+
-|             micro-ROS client library (urcl)                 |    rcl, rclc   |
-                e.g.: tf, lifecycle, executors, etc.          |                |
+|                         rcl, rclc                           |    rcl, rclc   |
+|                                                             |                |
 +-------------------------------------------------------------+----------------+
-|             micro-ROS middleware interface (urmw)           |       rmw      |
-+-------------------+---------------------+-------------------+----------------+
-|    middleware 1   |     middleware 2    |   middleware 3    |   mqtt |  ndn  |
-| (e.g. micro-RTPS) |                     |                   |        |       |
+|                                                             |       rmw      |
+|                         rmw_fake                            +----------------+
+|                                                             |   mqtt |  ndn  |
+|                                                             |        |
 +-------------------+---------------------+-------------------+----------------+
 |      Real-Time Operating System (RTOS) abstractions         |                |
 +------------------+------------------+-----------------------+      RIOT      |
