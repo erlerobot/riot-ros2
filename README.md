@@ -6,7 +6,7 @@ being put together with the support of Loic Dauphin, Emmanuel Baccelli and Cedri
 
 The original work had an architecture like:
 ```
-----------------+
++----------------+
 |   application  |
 +----------------+
 |    rcl, rclc   |
@@ -37,7 +37,7 @@ This prototype, aims to put together something like:
 |                                                             |       rmw      |
 |                         rmw_fake                            +----------------+
 |                                                             |   mqtt |  ndn  |
-|                                                             |        |
+|                                                             |        |       |
 +-------------------+---------------------+-------------------+----------------+
 |      Real-Time Operating System (RTOS) abstractions         |                |
 +------------------+------------------+-----------------------+      RIOT      |
@@ -47,6 +47,15 @@ This prototype, aims to put together something like:
 |                                 hardware                                     |
 +------------------------------------------------------------------------------+
 ```
+
+### Progress
+
+- [x] Dockerize the setup to simplify development
+- [x] Add NuttX RTOS and a dedicated workspace
+- [ ] Add a `rmw_fake` ROS 2 package that works as a silly middleware for now
+- [ ] Modify toolchain to include NuttX
+- [ ] Run a simple example using NuttX simulator (no board required)
+- [ ] Validate simple example using `Olimex LTD STM32-E407` board
 
 ***Note**: the code here represents a working is only a work in progress.*
 

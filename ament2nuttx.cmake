@@ -174,9 +174,9 @@ macro(add_executable target)
     # endforeach()
 
     # TODO figure out if this is or not needed
-    # # Add dummy executable target to enable related commands
-    # file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/dummy.c" "int main() {}")
-    # _add_executable(${target} "${CMAKE_CURRENT_BINARY_DIR}/dummy.c")
+    # Add dummy executable target to enable related commands
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/dummy.c" "int main() {}")
+    _add_executable(${target} "${CMAKE_CURRENT_BINARY_DIR}/dummy.c")
 
     # Add custom target to trigger sources generation if any
     add_custom_target(${target}_dummy ALL DEPENDS ${${target}_sources})
