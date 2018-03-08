@@ -65,6 +65,10 @@ macro(try_compile)
     # Do nothing
 endmacro()
 
+
+# The objective here should be to transform
+# the corresponding ROS 2 packages into NuttX apps
+
 ################################################################
 # Replace add_executable
 ################################################################
@@ -75,7 +79,7 @@ endmacro()
 #
 ################################################################
 macro(add_executable target)
-    message("[cmake2riot] executing custom add_executable command")
+    message("[cmake2nuttx] executing custom add_executable command")
 
     # Parse arguments
     set(options WIN32 MACOSX_BUNDLE EXCLUDE_FROM_ALL)
@@ -86,12 +90,16 @@ macro(add_executable target)
     # Display Warnings for unsupported parameters
     foreach(opt in ${options})
         if(args_${opt})
-            message(WARNING "[cmake2riot] ${opt} option is not supported")
+            message(WARNING "[cmake2nuttx] ${opt} option is not supported")
         endif()
     endforeach()
 
     # Make the directory where the RIOT project will be put
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/cmake2riot/${target})
+    # TODO: figure out the real need of this or remove, from RIOT's project
+    # nothing's deployed here. The "install" directory is used instead of the
+    # "build".
+    #   E.g.: CMAKE_CURRENT_BINARY_DIR: /root/ros2_nuttx_ws/build/talker_c
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/cmake2nuttx/${target})
 
     # Foreach source arguments
     set(${target}_sources "")
@@ -126,40 +134,49 @@ macro(add_executable target)
     unset(_AMENT_PACKAGE_NAME)
     ament_package_xml()
 
+    # Fill the NuttX module's Makefile the example followed is
+    #     https://bitbucket.org/nuttx/apps/src/0b3ce51a0ed61da3048d8611a70d7280132ae513/examples/bmp180/?at=master
+    # TODO: review and adjust according to NuttX apps
 
-    # Fill the RIOT module's Makefile
-    file(WRITE  "${MAKEFILE_PATH}" "APPLICATION = ${target}\n")
-    file(APPEND "${MAKEFILE_PATH}" "RIOTBASE ?= ${CMAKE_INSTALL_PREFIX}/RIOT\n")
-    file(APPEND "${MAKEFILE_PATH}" "BOARD ?= ${BOARD}\n")
-    file(APPEND "${MAKEFILE_PATH}" "QUIET ?= 1\n")
-    file(APPEND "${MAKEFILE_PATH}" "WERROR ?= 0\n")
+    # message("MAKEFILE_PATH: " ${MAKEFILE_PATH})
+    # message("MAKEFILE_INCLUDE_PATH: " ${MAKEFILE_INCLUDE_PATH})
 
-    if("${target}" STREQUAL "${PROJECT_NAME}")
-        foreach(src ${${target}_sources})
-            if("${src}" MATCHES ".c$|.cpp$")
-                file(APPEND "${MAKEFILE_PATH}" "SRC += ${src}\n")
-            else()
-                message(WARNING "[cmake2riot] adding a header to library : ${src}")
-            endif()
-        endforeach()
-    endif()
-    file(APPEND "${MAKEFILE_PATH}" "CFLAGS += -DROS_PACKAGE_NAME=\\\"${PROJECT_NAME}\\\"\n")
-    file(APPEND "${MAKEFILE_PATH}" "include ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/Makefile.include\n")
-    file(APPEND "${MAKEFILE_PATH}" "include $(RIOTBASE)/Makefile.include\n")
+    # file(WRITE  "${MAKEFILE_PATH}" "APPLICATION = ${target}\n")
+    # file(APPEND "${MAKEFILE_PATH}" "RIOTBASE ?= ${CMAKE_INSTALL_PREFIX}/RIOT\n")
+    # file(APPEND "${MAKEFILE_PATH}" "BOARD ?= ${BOARD}\n")
+    # file(APPEND "${MAKEFILE_PATH}" "QUIET ?= 1\n")
+    # file(APPEND "${MAKEFILE_PATH}" "WERROR ?= 0\n")
+    #
+    # if("${target}" STREQUAL "${PROJECT_NAME}")
+    #     foreach(src ${${target}_sources})
+    #         if("${src}" MATCHES ".c$|.cpp$")
+    #             file(APPEND "${MAKEFILE_PATH}" "SRC += ${src}\n")
+    #         else()
+    #             message(WARNING "[cmake2riot] adding a header to library : ${src}")
+    #         endif()
+    #     endforeach()
+    # endif()
+    # file(APPEND "${MAKEFILE_PATH}" "CFLAGS += -DROS_PACKAGE_NAME=\\\"${PROJECT_NAME}\\\"\n")
+    # file(APPEND "${MAKEFILE_PATH}" "include ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/Makefile.include\n")
+    # file(APPEND "${MAKEFILE_PATH}" "include $(RIOTBASE)/Makefile.include\n")
 
-    # Fill the RIOT module's Makefile.include
-    foreach(dep ${${PROJECT_NAME}_BUILD_DEPENDS})
-      file(APPEND "${MAKEFILE_INCLUDE_PATH}" "DIRS += ${CMAKE_INSTALL_PREFIX}/${dep}\n")
-      file(APPEND "${MAKEFILE_INCLUDE_PATH}" "USEMODULE += ${dep}\n")
-      file(APPEND "${MAKEFILE_INCLUDE_PATH}" "include ${CMAKE_INSTALL_PREFIX}/${dep}/Makefile.include\n")
-    endforeach()
-    foreach(idir ${${PROJECT_NAME}_INCLUDE_DIRS})
-      file(APPEND "${MAKEFILE_INCLUDE_PATH}" "INCLUDES += -I${idir}\n")
-    endforeach()
+    # TODO: Fill Make.defs according to
+    #   https://bitbucket.org/nuttx/apps/src/0b3ce51a0ed61da3048d8611a70d7280132ae513/examples/bmp180/?at=master
 
-    # Add dummy executable target to enable related commands
-    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/dummy.c" "int main() {}")
-    _add_executable(${target} "${CMAKE_CURRENT_BINARY_DIR}/dummy.c")
+    # # Fill the RIOT module's Makefile.include
+    # foreach(dep ${${PROJECT_NAME}_BUILD_DEPENDS})
+    #   file(APPEND "${MAKEFILE_INCLUDE_PATH}" "DIRS += ${CMAKE_INSTALL_PREFIX}/${dep}\n")
+    #   file(APPEND "${MAKEFILE_INCLUDE_PATH}" "USEMODULE += ${dep}\n")
+    #   file(APPEND "${MAKEFILE_INCLUDE_PATH}" "include ${CMAKE_INSTALL_PREFIX}/${dep}/Makefile.include\n")
+    # endforeach()
+    # foreach(idir ${${PROJECT_NAME}_INCLUDE_DIRS})
+    #   file(APPEND "${MAKEFILE_INCLUDE_PATH}" "INCLUDES += -I${idir}\n")
+    # endforeach()
+
+    # TODO figure out if this is or not needed
+    # # Add dummy executable target to enable related commands
+    # file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/dummy.c" "int main() {}")
+    # _add_executable(${target} "${CMAKE_CURRENT_BINARY_DIR}/dummy.c")
 
     # Add custom target to trigger sources generation if any
     add_custom_target(${target}_dummy ALL DEPENDS ${${target}_sources})

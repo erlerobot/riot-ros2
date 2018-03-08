@@ -1,3 +1,57 @@
+The code presented here is inspired by https://github.com/astralien3000/riot-ros2
+and aims to put together a prototype for [micro-ROS](https://cordis.europa.eu/project/rcn/213167_en.html)
+which aims to bring ROS 2 to microcontrollers while using a similar architecture while supporting different
+Real-Time Operating Systems and communication middlewares. The prototype displayed here is
+being put together with the support of Loic Dauphin, Emmanuel Baccelli and Cedric Adjih.
+
+The original work had an architecture like:
+```
+----------------+
+|   application  |
++----------------+
+|    rcl, rclc   |
+|                |
++----------------+
+|       rmw      |
++----------------+
+|   mqtt |  ndn  |
+|        |       |
++----------------+
+|                |
++      RIOT      |
+|                |
+|                |
++----------------+
+|    hardware    |
++----------------+
+```
+
+This prototype, aims to put together something like:
+```
++-------------------------------------------------------------+----------------+
+|                       application                           |   application  |
++-------------------------------------------------------------+----------------+
+|             micro-ROS client library (urcl)                 |    rcl, rclc   |
+                e.g.: tf, lifecycle, executors, etc.          |                |
++-------------------------------------------------------------+----------------+
+|             micro-ROS middleware interface (urmw)           |       rmw      |
++-------------------+---------------------+-------------------+----------------+
+|    middleware 1   |     middleware 2    |   middleware 3    |   mqtt |  ndn  |
+| (e.g. micro-RTPS) |                     |                   |        |       |
++-------------------+---------------------+-------------------+----------------+
+|      Real-Time Operating System (RTOS) abstractions         |                |
++------------------+------------------+-----------------------+      RIOT      |
+|         RTOS 1   |       RTOS 2     |        RTOS 3         |                |
+|     (e.g. NuttX) |                  |                       |                |
++------------------+------------------+-----------------------+----------------+
+|                                 hardware                                     |
++------------------------------------------------------------------------------+
+```
+
+***Note**: the code here represents a working is only a work in progress.*
+
+------
+
 # RIOT-ROS2
 
 This project enables ROS2 to run on microcontrollers using the RIOT Operating System.
@@ -50,7 +104,7 @@ sudo apt install cmake git python3-pip python3-empy g++-multilib
 pip3 install vcstool
 ```
 
-If your arm-none-eabi-gcc is too old (< gcc 5) : 
+If your arm-none-eabi-gcc is too old (< gcc 5) :
 
 ```bash
 sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
@@ -89,7 +143,7 @@ wget https://raw.githubusercontent.com/astralien3000/riot-ros2/master/ament2riot
 vcs import src < riot-ros2.repos
 ```
 
-Some downloaded package are not supported, you may run these commands to disable them : 
+Some downloaded package are not supported, you may run these commands to disable them :
 
 ```sh
 touch src/ros2/rcl_interfaces/test_msgs/AMENT_IGNORE
@@ -135,12 +189,12 @@ First, setup the tap interface :
 ./install/RIOT/dist/tools/tapsetup/tapsetup
 ```
 
-On a first terminal : 
+On a first terminal :
 ```sh
 (cd install/talker_c && make PORT=tap0 all term)
 ```
 
-On a second terminal : 
+On a second terminal :
 ```sh
 (cd install/listener_c && make PORT=tap1 all term)
 ```
