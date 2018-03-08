@@ -83,6 +83,8 @@ RUN git config --global user.name "micro-ROS"
 #--------------------
 ENV DOWNLOAD_URL_NUTTX https://raw.githubusercontent.com/erlerobot/riot-ros2/nuttx
 
+RUN apt-get install -y tree
+
 WORKDIR /root
 RUN mkdir -p /root/ros2_nuttx_ws/src
 RUN cd /root/ros2_nuttx_ws && wget ${DOWNLOAD_URL_NUTTX}/nuttx-ros2.repos
@@ -94,15 +96,30 @@ RUN cd /root/ros2_nuttx_ws && touch src/ros2/rcl_interfaces/test_msgs/AMENT_IGNO
 #--------------------
 # Tooling
 #--------------------
-RUN cd /root/ros2_nuttx_ws && wget ${DOWNLOAD_URL}/ament-tools.repos
+RUN cd /root/ros2_nuttx_ws && wget ${DOWNLOAD_URL_NUTTX}/ament-tools.repos
 RUN cd /root/ros2_nuttx_ws && vcs import src < ament-tools.repos
 RUN pip3 install pyparsing
 
 # --------------------
 # (Cross-)Compiling
 # --------------------
+# Ament ignore RIOT related stuff
+#     TODO: remove all of this instead
+RUN cd /root/ros2_nuttx_ws/src/nuttx/riot && touch AMENT_IGNORE
+RUN cd /root/ros2_nuttx_ws/src/nuttx/riot_ndn && touch AMENT_IGNORE
+
 # cross-compile everything through ament
 RUN cd /root/ros2_nuttx_ws && ./src/ament/ament_tools/scripts/ament.py build --symlink-install --force-cmake-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=`pwd`/ament2nuttx.cmake
+
+# COPY latest version of the cmake toolchain version
+COPY ament2nuttx.cmake /root/ros2_nuttx_ws/ament2nuttx.cmake
+# RUN cd /root/ros2_nuttx_ws && wget ${DOWNLOAD_URL_NUTTX}/ament2nuttx.cmake
+
+# cross-compile everything through ament
+RUN cd /root/ros2_nuttx_ws && ./src/ament/ament_tools/scripts/ament.py build --symlink-install \
+  --only-package talker_c \
+  --force-cmake-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=`pwd`/ament2nuttx.cmake
+
 
 # #--------------------
 # # Entry point

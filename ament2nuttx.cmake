@@ -30,15 +30,30 @@ if(NOT DEFINED BOARD)
     endif()
 endif()
 
-# Define RIOT
-set(RIOT 1)
+# # Define RIOT
+# set(RIOT 1)
 
-# Create the RIOT module's Makefile
+# Define NUTTX
+set(NUTTX 1)
+set(NUTTXBASE "${CMAKE_INSTALL_PREFIX}/NUTTX")
+
+
+# Nuttx module's makefiles
+#   inspired from RIOT module's Makefile
+#   TODO: review this
 set(MAKEFILE_PATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/Makefile")
 file(WRITE "${MAKEFILE_PATH}" "")
 file(APPEND "${MAKEFILE_PATH}" "MODULE = ${PROJECT_NAME}\n")
-file(APPEND "${MAKEFILE_PATH}" "include $(RIOTBASE)/Makefile.base\n")
+# TODO: Only if necessary
+file(APPEND "${MAKEFILE_PATH}" "include $(NUTTXBASE)/Makefile.base\n")
 
+message("value of RIOTBASE: " ${RIOTBASE})
+message("value of NUTTXBASE: " ${NUTTXBASE})
+message("value of PROJECT_NAME: " ${PROJECT_NAME})
+message("value of CMAKE_INSTALL_PREFIX: " ${CMAKE_INSTALL_PREFIX})
+message("value of MAKEFILE_PATH: " ${MAKEFILE_PATH})
+
+# TODO: Not sure if necessary
 # Create the RIOT module's Makefile.include
 set(MAKEFILE_INCLUDE_PATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/Makefile.include")
 file(WRITE "${MAKEFILE_INCLUDE_PATH}" "")
