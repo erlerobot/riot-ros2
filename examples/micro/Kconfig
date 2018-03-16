@@ -1,0 +1,30 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+config EXAMPLES_MICRO
+	bool "\"Hello, micro-ROS!\" example"
+	default n
+	---help---
+		Enable the \"Hello, micro-ROS!\" example
+
+if EXAMPLES_MICRO
+
+config EXAMPLES_MICRO_PROGNAME
+	string "Program name"
+	default "hello"
+	depends on BUILD_KERNEL
+	---help---
+		This is the name of the program that will be use when the NSH ELF
+		program is installed.
+
+config EXAMPLES_MICRO_PRIORITY
+	int "Hello task priority"
+	default 100
+
+config EXAMPLES_MICRO_STACKSIZE
+	int "Hello stack size"
+	default 2048
+
+endif

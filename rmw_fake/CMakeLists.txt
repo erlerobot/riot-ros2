@@ -22,6 +22,7 @@ install(
 )
 
 ament_package_xml()
+
 set(MAKEFILE_PATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/Makefile")
 file(WRITE  "${MAKEFILE_PATH}" "MODULE = ${PROJECT_NAME}\n")
 foreach(dep ${${PROJECT_NAME}_BUILD_DEPENDS})

@@ -52,9 +52,14 @@ This prototype, aims to put together something like:
 
 - [x] Dockerize the setup to simplify development
 - [x] Add NuttX RTOS and a dedicated workspace
+- [x] Add a simple `micro` app to the `examples`  folder and have it compiled by
+  NuttX (through the toolchain generation, blah). It runs with the `sim`.
+- [ ] Create an example ROS package called `micro_2` which automatically gets
+  converted into a NuttX App through the toolchain adaptation (`ament2nuttx`).
+- [ ] Add a simple `helloxx` app to the `examples` folder and have it compiled by
+    NuttX (through the toolchain generation, blah)
+- [ ] Review `rmw_fake` code
 - [ ] Add a `rmw_fake` ROS 2 package that works as a silly middleware for now
-- [ ] Modify toolchain to include NuttX
-- [ ] Run a simple example using NuttX simulator (no board required)
 - [ ] Validate simple example using `Olimex LTD STM32-E407` board
 
 ***Note**: the code here represents a working is only a work in progress.*

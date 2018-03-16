@@ -115,6 +115,8 @@ RUN cd /root/ros2_nuttx_ws && ./src/ament/ament_tools/scripts/ament.py build --s
 COPY ament2nuttx.cmake /root/ros2_nuttx_ws/ament2nuttx.cmake
 # RUN cd /root/ros2_nuttx_ws && wget ${DOWNLOAD_URL_NUTTX}/ament2nuttx.cmake
 
+RUN ls; ls
+
 COPY rmw_fake /root/ros2_nuttx_ws/src/rmw_fake
 
 # cross-compile everything through ament
