@@ -115,15 +115,22 @@ RUN cd /root/ros2_nuttx_ws && ./src/ament/ament_tools/scripts/ament.py build --s
 COPY ament2nuttx.cmake /root/ros2_nuttx_ws/ament2nuttx.cmake
 # RUN cd /root/ros2_nuttx_ws && wget ${DOWNLOAD_URL_NUTTX}/ament2nuttx.cmake
 
-RUN ls; ls
+# COPY rmw_fake /root/ros2_nuttx_ws/src/rmw_fake
+#
+# # cross-compile everything through ament
+# RUN cd /root/ros2_nuttx_ws && ./src/ament/ament_tools/scripts/ament.py build --symlink-install \
+#   --only-package rmw_fake \
+#   --force-cmake-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=`pwd`/ament2nuttx.cmake
 
-COPY rmw_fake /root/ros2_nuttx_ws/src/rmw_fake
+COPY examples/micro_2 /root/ros2_nuttx_ws/src/micro_2
 
 # cross-compile everything through ament
 RUN cd /root/ros2_nuttx_ws && ./src/ament/ament_tools/scripts/ament.py build --symlink-install \
-  --only-package rmw_fake \
+  --only-package micro_2 \
   --force-cmake-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=`pwd`/ament2nuttx.cmake
 
+RUN cat /root/ros2_nuttx_ws/install/micro_2/Makefile
+RUN cat /root/ros2_nuttx_ws/install/micro_2/Make.defs
 
 # #--------------------
 # # Entry point

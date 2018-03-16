@@ -146,7 +146,39 @@ macro(add_executable target)
     # file(APPEND "${MAKEFILE_PATH}" "BOARD ?= ${BOARD}\n")
     # file(APPEND "${MAKEFILE_PATH}" "QUIET ?= 1\n")
     # file(APPEND "${MAKEFILE_PATH}" "WERROR ?= 0\n")
-    #
+
+    ##############################
+    # NuttX Makefile composition
+    ##############################
+    file(WRITE  "${MAKEFILE_PATH}" "-include $(TOPDIR)/Make.defs\n")
+    file(APPEND  "${MAKEFILE_PATH}" "CONFIG_EXAMPLES_ROS_PRIORITY ?= SCHED_PRIORITY_DEFAULT\n")
+    file(APPEND  "${MAKEFILE_PATH}" "CONFIG_EXAMPLES_ROS_STACKSIZE ?= 2048\n")
+    file(APPEND  "${MAKEFILE_PATH}" "APPNAME = ${target}\n")
+    file(APPEND  "${MAKEFILE_PATH}" "PRIORITY = $(CONFIG_EXAMPLES_ROS_PRIORITY)\n")
+    file(APPEND  "${MAKEFILE_PATH}" "STACKSIZE = $(CONFIG_EXAMPLES_ROS_STACKSIZE)\n")
+    file(APPEND  "${MAKEFILE_PATH}" "ASRCS =\n")
+    file(APPEND  "${MAKEFILE_PATH}" "CSRCS =\n")
+    file(APPEND  "${MAKEFILE_PATH}" "MAINSRC = micro_main.c\n")
+    file(APPEND  "${MAKEFILE_PATH}" "CONFIG_EXAMPLES_ROS_PROGNAME ?= ${target}$(EXEEXT)\n")
+    file(APPEND  "${MAKEFILE_PATH}" "PROGNAME = $(CONFIG_EXAMPLES_ROS_PROGNAME)\n")
+    file(APPEND  "${MAKEFILE_PATH}" "include $(APPDIR)/Application.mk\n")
+
+    ##############################
+    # NuttX Make.defs composition
+    ##############################
+    # message("MAKEFILE_PATH: " ${MAKEFILE_PATH})
+    # message("CMAKE_CURRENT_BINARY_DIR: " ${CMAKE_CURRENT_BINARY_DIR})
+    # message("CMAKE_INSTALL_PREFIX: " ${CMAKE_INSTALL_PREFIX}/${target})
+    set(MAKEDEFS "${CMAKE_INSTALL_PREFIX}/${target}/Make.defs")
+    file(WRITE  "${MAKEDEFS}" "ifeq ($(CONFIG_EXAMPLES_ROS),y)\n")
+    file(APPEND "${MAKEDEFS}" "CONFIGURED_APPS += ${target}\n")
+    file(APPEND "${MAKEDEFS}" "endif\n")
+
+    ##############################
+    # NuttX Kconfig composition
+    ##############################
+
+
     # if("${target}" STREQUAL "${PROJECT_NAME}")
     #     foreach(src ${${target}_sources})
     #         if("${src}" MATCHES ".c$|.cpp$")
