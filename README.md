@@ -54,8 +54,9 @@ This prototype, aims to put together something like:
 - [x] Add NuttX RTOS and a dedicated workspace
 - [x] Add a simple `micro` app to the `examples`  folder and have it compiled by
   NuttX (through the toolchain generation, blah). It runs with the `sim`.
-- [ ] Create an example ROS package called `micro_2` which automatically gets
-  converted into a NuttX App through the toolchain adaptation (`ament2nuttx`). (**ongoing**)
+- [x] Create an example ROS package called `micro_2` which automatically gets
+  converted into a NuttX App through the toolchain adaptation (`ament2nuttx`).
+- [ ] Reorganize code, structure of folders, etc.
 - [ ] Add a simple `helloxx` app to the `examples` folder and have it compiled by
     NuttX (through the toolchain generation, blah)
 - [ ] Review `rmw_fake` code

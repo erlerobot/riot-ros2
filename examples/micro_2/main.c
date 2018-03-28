@@ -6,7 +6,12 @@
 // for Linux or others
 #include <nuttx/config.h>
 
-int ros_main(void)
+#ifdef CONFIG_BUILD_KERNEL
+int main(int argc, FAR char *argv[])
+#else
+// int ros_main(void)
+int ros_main(int argc, char *argv[])
+#endif
 {
   // static int argc = 0;
   // static char **argv = NULL;

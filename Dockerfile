@@ -122,15 +122,52 @@ COPY ament2nuttx.cmake /root/ros2_nuttx_ws/ament2nuttx.cmake
 #   --only-package rmw_fake \
 #   --force-cmake-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=`pwd`/ament2nuttx.cmake
 
-COPY examples/micro_2 /root/ros2_nuttx_ws/src/micro_2
+# Build NuttX
+# Install NuttX dependencies
+RUN apt-get update
+RUN apt-get install libssl-dev libxml2-dev pkg-config picocom screen libusb-1.0-0-dev -y
+RUN apt-get install -y autotools-dev autoconf gperf flex bison libncurses5-dev libtool
+RUN apt-get install python-serial openocd \
+    flex bison libncurses5-dev autoconf texinfo \
+    libftdi-dev libtool zlib1g-dev -y
+RUN apt-get install git -y
+
+# Set up related tools
+RUN git clone https://bitbucket.org/nuttx/tools
+RUN cd tools/kconfig-frontends && ./configure && make
+RUN cd tools/kconfig-frontends && make install
+
+# Update libraries
+RUN /sbin/ldconfig -v
+
+# Clone the apps code, needed for the simulator selection
+RUN cd /root/ros2_nuttx_ws/install/ && git clone https://github.com/microROS/apps
+
+# Select the sim configuration, TODO: replace
+RUN cd /root/ros2_nuttx_ws/install/NUTTX && tools/configure.sh sim/nsh
+
+# # TODO: Only for testing purposes
+# COPY examples/micro_2 /root/ros2_nuttx_ws/src/micro_2
 
 # cross-compile everything through ament
 RUN cd /root/ros2_nuttx_ws && ./src/ament/ament_tools/scripts/ament.py build --symlink-install \
   --only-package micro_2 \
   --force-cmake-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=`pwd`/ament2nuttx.cmake
 
-RUN cat /root/ros2_nuttx_ws/install/micro_2/Makefile
-RUN cat /root/ros2_nuttx_ws/install/micro_2/Make.defs
+# Get a symbolink link to the desired application from the apps directory
+RUN ln -s /root/ros2_nuttx_ws/install/micro_2 /root/ros2_nuttx_ws/install/apps/micro_2
+
+# Patch the apps folder to include the micro_2 symbolink link
+RUN cd /root/ros2_nuttx_ws/install/apps && patch -R Kconfig < /root/apps_kconfig.patch
+
+# Set up the right .config for the micro_2 example
+COPY ./resources/nuttx/.config /root/ros2_nuttx_ws/install/NUTTX
+
+# Make the micro_2 example
+RUN cd /root/ros2_nuttx_ws/install/NUTTX && make
+
+
+# RUN cat /root/ros2_nuttx_ws/install/apps/Kconfig
 
 # #--------------------
 # # Entry point
